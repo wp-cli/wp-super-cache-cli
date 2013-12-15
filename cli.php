@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Manages the WP Super Cache plugin
+ */
 class WPSuperCache_Command extends WP_CLI_Command {
 
 	/**
