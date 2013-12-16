@@ -14,8 +14,6 @@ function wp_super_cache_cli_init() {
 		return;
 
 	if ( defined('WP_CLI') && WP_CLI ) {
-		WP_CLI::add_man_dir( dirname(__FILE__) . '/man', dirname(__FILE__) . '/man' );
-
 		include dirname(__FILE__) . '/cli.php';
 	}
 }
