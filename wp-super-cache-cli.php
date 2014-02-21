@@ -9,11 +9,15 @@ Plugin URI: http://github.com/wp-cli/wp-super-cache-cli
 License: MIT
 */
 
+if ( !defined( 'WP_CLI' ) ) {
+	return;
+}
+
 function wp_super_cache_cli_init() {
 	if ( !function_exists( 'wp_super_cache_enable' ) )
 		return;
 
-	if ( defined('WP_CLI') && WP_CLI ) {
+	if ( WP_CLI ) {
 		include dirname(__FILE__) . '/cli.php';
 	}
 }
