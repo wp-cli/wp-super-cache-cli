@@ -13,4 +13,4 @@ This repository contains a [WP-CLI plugin](https://github.com/wp-cli/wp-cli)  fo
 
 Installing
 --------------------------------------------------
-For isntructions on installing this, and other, WP-CLI community packages, read the [Community Packages](https://github.com/wp-cli/wp-cli/wiki/Community-Packages) section of the WP-CLI Wiki.
+For instructions on installing this, and other, WP-CLI community packages, read the [Community Packages](https://github.com/wp-cli/wp-cli/wiki/Community-Packages) section of the WP-CLI Wiki.
