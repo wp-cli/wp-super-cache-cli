@@ -11,6 +11,10 @@ class WPSuperCache_Command extends WP_CLI_Command {
 	 * @synopsis [--post_id=<post-id>] [--permalink=<permalink>]
 	 */
 	function flush( $args = array(), $assoc_args = array() ) {
+		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
+		global $WPSC_HTTP_HOST;
+		$WPSC_HTTP_HOST = parse_url(get_site_url())['host'];
+
 		if ( isset($assoc_args['post_id']) ) {
 			if ( is_numeric( $assoc_args['post_id'] ) ) {
 				wp_cache_post_change( $assoc_args['post_id'] );
@@ -30,10 +34,7 @@ class WPSuperCache_Command extends WP_CLI_Command {
 			}
 		} else {
 			global $file_prefix;
-
-			require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
 			wp_cache_clean_cache( $file_prefix, true );
-
 			WP_CLI::success( 'Cache cleared.' );
 		}
 	}
