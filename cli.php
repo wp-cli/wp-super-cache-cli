@@ -13,7 +13,8 @@ class WPSuperCache_Command extends WP_CLI_Command {
 	function flush( $args = array(), $assoc_args = array() ) {
 		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
 		global $WPSC_HTTP_HOST;
-		$WPSC_HTTP_HOST = parse_url( home_url() )['host'];
+		$home_url = parse_url( home_url() );
+		$WPSC_HTTP_HOST = $home_url['host'];
 
 		if ( isset($assoc_args['post_id']) ) {
 			if ( is_numeric( $assoc_args['post_id'] ) ) {
