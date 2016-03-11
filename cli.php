@@ -168,5 +168,11 @@ class WPSuperCache_Command extends WP_CLI_Command {
 	}
 }
 
-WP_CLI::add_command( 'super-cache', 'WPSuperCache_Command' );
+WP_CLI::add_command( 'super-cache', 'WPSuperCache_Command', array(
+	'before_invoke' => function(){
+		if ( ! function_exists( 'wp_super_cache_enable' ) ) {
+			WP_CLI::error( 'WP Super Cache needs to be enabled to use its WP-CLI commands.' );
+		}
+	}
+) );
 
