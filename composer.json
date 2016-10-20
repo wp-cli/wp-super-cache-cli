@@ -1,6 +1,6 @@
 {
     "name": "wp-cli/wp-super-cache-cli",
-    "type": "command",
+    "type": "wp-cli-package",
     "description": "Add a `wp super-cache` command to support the WP Super Cache plug-in",
     "keywords": [
         "wp-cli",
