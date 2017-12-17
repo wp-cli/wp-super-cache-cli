@@ -43,17 +43,30 @@ class WPSuperCache_Command extends WP_CLI_Command {
 	 * Get the status of the cache.
 	 */
 	function status( $args = array(), $assoc_args = array() ) {
-		$GLOBALS['WPSC_HTTP_HOST'] = (string) parse_url( get_option( 'home' ), PHP_URL_HOST );
-		if( ! @include( $GLOBALS['wp_cache_config_file'] ) ) {
+		global $cache_enabled, $super_cache_enabled, $wp_cache_mod_rewrite, $wp_cache_config_file;
+
+		if( ! isset( $cache_enabled )
+			&& ! empty( $wp_cache_config_file )
+			&& ! @include( $wp_cache_config_file )
+		) {
 			WP_CLI::error( "Can't load config file" );
 			return;
 		}
 
-		$cache_stats = get_option( 'supercache_stats' );
+		if ( is_multisite() && 1 === (int) get_option( 'wp_super_cache_disabled' ) ) {
+			$cache_enabled = false;
+			$super_cache_enabled = false;
+		}
 
 		WP_CLI::line( WP_CLI::colorize( 'Cache status: ' . ($cache_enabled ? '%gOn%n' : '%rOff%n') ) );
 		WP_CLI::line( 'Cache Delivery Method: '. ($wp_cache_mod_rewrite ? 'Expert' : 'Simple' ) );
 		WP_CLI::line();
+
+		if ( ! $cache_enabled ) {
+			return;
+		}
+
+		$cache_stats = get_option( 'supercache_stats' );
 
 		if ( !empty( $cache_stats ) ) {
 			if ( $cache_stats['generated'] > time() - 3600 * 24 ) {
