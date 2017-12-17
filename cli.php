@@ -43,13 +43,33 @@ class WPSuperCache_Command extends WP_CLI_Command {
 	 * Get the status of the cache.
 	 */
 	function status( $args = array(), $assoc_args = array() ) {
-		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
+		global $cache_enabled, $super_cache_enabled, $wp_cache_mod_rewrite, $wp_cache_config_file;
+
+		if( ! isset( $cache_enabled )
+			&& ! empty( $wp_cache_config_file )
+			&& ! @include( $wp_cache_config_file )
+		) {
+			WP_CLI::error( "Can't load config file" );
+			return;
+		}
+
+		if ( is_multisite() && 1 === (int) get_option( 'wp_super_cache_disabled' ) ) {
+			$cache_enabled = false;
+			$super_cache_enabled = false;
+		}
+
+		WP_CLI::line( WP_CLI::colorize( 'Cache status: ' . ($cache_enabled ? '%gOn%n' : '%rOff%n') ) );
+		WP_CLI::line( 'Cache Delivery Method: '. ($wp_cache_mod_rewrite ? 'Expert' : 'Simple' ) );
+		WP_CLI::line();
+
+		if ( ! $cache_enabled ) {
+			return;
+		}
 
 		$cache_stats = get_option( 'supercache_stats' );
 
 		if ( !empty( $cache_stats ) ) {
 			if ( $cache_stats['generated'] > time() - 3600 * 24 ) {
-				WP_CLI::line( 'Cache status: ' . ($super_cache_enabled ? '%gOn%n' : '%rOff%n') );
 				WP_CLI::line( 'Cache content on ' . date('r', $cache_stats['generated'] ) . ': ' );
 				WP_CLI::line();
 				WP_CLI::line( '    WordPress cache:' );
@@ -73,9 +93,12 @@ class WPSuperCache_Command extends WP_CLI_Command {
 	function enable( $args = array(), $assoc_args = array() ) {
 		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
 
-		wp_super_cache_enable();
+		wp_cache_enable();
+		if ( ! defined( 'DISABLE_SUPERCACHE' ) ) {
+			wp_super_cache_enable();
+		}
 
-		if($super_cache_enabled) {
+		if ( $GLOBALS['cache_enabled'] ) {
 			WP_CLI::success( 'The WP Super Cache is enabled.' );
 		} else {
 			WP_CLI::error('The WP Super Cache is not enabled, check its settings page for more info.');
@@ -88,9 +111,10 @@ class WPSuperCache_Command extends WP_CLI_Command {
 	function disable( $args = array(), $assoc_args = array() ) {
 		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
 
+		wp_cache_disable();
 		wp_super_cache_disable();
 
-		if(!$super_cache_enabled) {
+		if ( ! $GLOBALS['cache_enabled'] ) {
 			WP_CLI::success( 'The WP Super Cache is disabled.' );
 		} else {
 			WP_CLI::error('The WP Super Cache is still enabled, check its settings page for more info.');
