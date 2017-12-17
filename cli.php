@@ -43,13 +43,20 @@ class WPSuperCache_Command extends WP_CLI_Command {
 	 * Get the status of the cache.
 	 */
 	function status( $args = array(), $assoc_args = array() ) {
-		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
+		$GLOBALS['WPSC_HTTP_HOST'] = (string) parse_url( get_option( 'home' ), PHP_URL_HOST );
+		if( ! @include( $GLOBALS['wp_cache_config_file'] ) ) {
+			WP_CLI::error( "Can't load config file" );
+			return;
+		}
 
 		$cache_stats = get_option( 'supercache_stats' );
 
+		WP_CLI::line( WP_CLI::colorize( 'Cache status: ' . ($cache_enabled ? '%gOn%n' : '%rOff%n') ) );
+		WP_CLI::line( 'Cache Delivery Method: '. ($wp_cache_mod_rewrite ? 'Expert' : 'Simple' ) );
+		WP_CLI::line();
+
 		if ( !empty( $cache_stats ) ) {
 			if ( $cache_stats['generated'] > time() - 3600 * 24 ) {
-				WP_CLI::line( 'Cache status: ' . ($super_cache_enabled ? '%gOn%n' : '%rOff%n') );
 				WP_CLI::line( 'Cache content on ' . date('r', $cache_stats['generated'] ) . ': ' );
 				WP_CLI::line();
 				WP_CLI::line( '    WordPress cache:' );
@@ -73,9 +80,12 @@ class WPSuperCache_Command extends WP_CLI_Command {
 	function enable( $args = array(), $assoc_args = array() ) {
 		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
 
-		wp_super_cache_enable();
+		wp_cache_enable();
+		if ( ! defined( 'DISABLE_SUPERCACHE' ) ) {
+			wp_super_cache_enable();
+		}
 
-		if($super_cache_enabled) {
+		if ( $GLOBALS['cache_enabled'] ) {
 			WP_CLI::success( 'The WP Super Cache is enabled.' );
 		} else {
 			WP_CLI::error('The WP Super Cache is not enabled, check its settings page for more info.');
@@ -88,9 +98,10 @@ class WPSuperCache_Command extends WP_CLI_Command {
 	function disable( $args = array(), $assoc_args = array() ) {
 		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
 
+		wp_cache_disable();
 		wp_super_cache_disable();
 
-		if(!$super_cache_enabled) {
+		if ( ! $GLOBALS['cache_enabled'] ) {
 			WP_CLI::success( 'The WP Super Cache is disabled.' );
 		} else {
 			WP_CLI::error('The WP Super Cache is still enabled, check its settings page for more info.');
