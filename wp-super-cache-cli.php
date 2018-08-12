@@ -13,3 +13,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	require_once dirname( __FILE__ ) . '/cli.php';
 }
 
+$autoload = __DIR__ . '/vendor/autoload.php';
+if ( file_exists( $autoload ) ) {
+	require_once $autoload;
+}
