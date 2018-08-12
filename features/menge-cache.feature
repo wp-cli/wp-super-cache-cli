@@ -23,7 +23,8 @@ Feature: Generate cache
     When I run `wp plugin activate wp-super-cache`
     Then STDOUT should contain:
       """
-      Plugin activated successfully.
+      Plugin 'wp-super-cache' activated.
+      Success: Activated 1 of 1 plugins.
       """
 
     When I run `wp plugin install https://github.com/wojsmol/wp-super-cache-cli/archive/test.zip --activate`
