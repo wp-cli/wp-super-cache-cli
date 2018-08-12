@@ -1,5 +1,19 @@
 {
-    "name": "wojsmol/wp-super-cache-cli",
+    "name": "wp-cli/wp-super-cache-cli",
+    "type": "wp-cli-package",
+    "description": "Add a `wp super-cache` command to support the WP Super Cache plug-in",
+    "keywords": [
+        "wp-cli",
+        "super-cache",
+        "cache"
+    ],
+    "homepage": "https://github.com/wp-cli/wp-super-cache-cli",
+    "license": "MIT",
+    "authors": [{
+        "name": "WP-CLI Team",
+        "homepage": "http://github.com/wp-cli",
+        "role": "Developer"
+    }],
     "require": {
         "php":">=5.4",
         "wp-cli/wp-cli": "2"
