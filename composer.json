@@ -1,30 +1,32 @@
 {
-    "name": "wp-cli/wp-super-cache-cli",
-    "type": "wp-cli-package",
-    "description": "Add a `wp super-cache` command to support the WP Super Cache plug-in",
-    "keywords": [
-        "wp-cli",
-        "super-cache",
-        "cache"
-    ],
-    "homepage": "https://github.com/wp-cli/wp-super-cache-cli",
-    "license": "MIT",
-    "authors": [{
-        "name": "WP-CLI Team",
-        "homepage": "http://github.com/wp-cli",
-        "role": "Developer"
-    }],
-    "minimum-stability": "dev",
-    "prefer-stable": true,
+    "name": "wojsmol/wp-super-cache-cli",
     "require": {
-        "php": ">=5.4",
-        "wp-cli/wp-cli": "^2"
-    }, 
-	"config": {
+        "php":">=5.4",
+        "wp-cli/wp-cli": "2"
+    },
+    "require-dev": {
+        "wp-cli/wp-cli-tests": "2"
+    },
+    "config": {
+        "platform": {
+            "php": "5.4"
+        },
         "process-timeout": 7200,
         "sort-packages": true
     },
-    "autoload": {
-        "files": [ "wp-super-cache-cli.php" ]
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "behat": "run-behat-tests",
+        "lint": "run-linter-tests",
+        "phpcs": "run-phpcs-tests",
+        "phpunit": "run-php-unit-tests",
+        "prepare-tests": "install-package-tests",
+        "test": [
+            "@lint",
+            "@phpcs",
+            "@phpunit",
+            "@behat"
+        ]
     }
 }
