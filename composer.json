@@ -22,6 +22,14 @@
     "require-dev": {
         "wp-cli/wp-cli-tests": "2"
     },
+	"autoload": {
+        "psr-4": {
+            "": "src/"
+        },
+        "files": [
+            "wp-super-cache-cli.php"
+        ]
+    },
     "config": {
         "platform": {
             "php": "5.4"
