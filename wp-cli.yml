@@ -1,2 +1,2 @@
 require:
-- wp-super-cache-cli.php
+  - wp-super-cache-cli.php
