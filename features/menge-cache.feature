@@ -14,6 +14,12 @@ Feature: Generate cache
       """
     And the wp-content/plugins/wp-super-cache directory should exist
 
+    When I run `wp package install wp-cli/wp-super-cache-cli`
+    Then STDOUT should contain:
+      """
+      Success: Package installed.
+      """
+
      When I run `wp super-cache enable`
      Then STDOUT should contain:
       """
