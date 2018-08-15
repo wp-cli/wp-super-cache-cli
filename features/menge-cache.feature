@@ -27,10 +27,10 @@ Feature: Generate cache
       Success: Activated 1 of 1 plugins.
       """
 
-    When I run `wp plugin install https://github.com/wojsmol/wp-super-cache-cli/archive/tov2.zip --activate`
+    When I run `wp package install https://github.com/wojsmol/wp-super-cache-cli/archive/tov2.zip
     Then STDOUT should contain:
       """
-      Plugin installed successfully.
+      Success: Package installed.
       """
 
      When I run `wp super-cache enable`

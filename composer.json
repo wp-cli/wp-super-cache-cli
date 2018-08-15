@@ -16,7 +16,7 @@
     }],
     "require": {
         "php": ">=5.4",
-        "wp-cli/extension-command": "2",
+        "wp-cli/package-command": "^2",
         "wp-cli/wp-cli": "2"
     },
     "require-dev": {
