@@ -20,13 +20,6 @@ Feature: Generate cache
       Error: 'super-cache' is not a registered wp command. See 'wp help' for available commands.
       """
 
-    When I run `wp plugin activate wp-super-cache`
-    Then STDOUT should contain:
-      """
-      Plugin 'wp-super-cache' activated.
-      Success: Activated 1 of 1 plugins.
-      """
-
     When I run `wp package install https://github.com/wojsmol/wp-super-cache-cli/archive/tov2.zip
     Then STDOUT should contain:
       """
