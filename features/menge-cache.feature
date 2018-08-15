@@ -14,18 +14,6 @@ Feature: Generate cache
       """
     And the wp-content/plugins/wp-super-cache directory should exist
 
-    When I try `wp super-cache enable`
-    Then STDERR should contain:
-      """
-      Error: 'super-cache' is not a registered wp command. See 'wp help' for available commands.
-      """
-
-    When I run `wp package install wojsmol/wp-super-cache-cli:dev-tov2`
-    Then STDOUT should contain:
-      """
-      Success: Package installed.
-      """
-
      When I run `wp super-cache enable`
      Then STDOUT should contain:
       """
