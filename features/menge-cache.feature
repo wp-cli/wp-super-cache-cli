@@ -20,7 +20,7 @@ Feature: Generate cache
       Error: 'super-cache' is not a registered wp command. See 'wp help' for available commands.
       """
 
-    When I run `wp package install wojsmol/wp-super-cache-cli@tov2
+    When I run `wp package install wojsmol/wp-super-cache-cli@tov2`
     Then STDOUT should contain:
       """
       Success: Package installed.
