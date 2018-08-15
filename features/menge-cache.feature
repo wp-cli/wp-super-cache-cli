@@ -14,7 +14,7 @@ Feature: Generate cache
       """
     And the wp-content/plugins/wp-super-cache directory should exist
 
-    When I run `wp package install wp-cli/wp-super-cache-cli`
+    When I run `wp package install wojsmol/wp-super-cache-cli:tov2`
     Then STDOUT should contain:
       """
       Success: Package installed.
