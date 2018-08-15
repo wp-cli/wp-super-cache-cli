@@ -40,12 +40,6 @@
             "wp-super-cache-cli.php"
         ]
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/wojsmol/wp-super-cache-cli"
-        }
-    ],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
