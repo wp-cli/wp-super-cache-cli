@@ -9,11 +9,13 @@
     ],
     "homepage": "https://github.com/wp-cli/wp-super-cache-cli",
     "license": "MIT",
-    "authors": [{
-        "name": "WP-CLI Team",
-        "homepage": "http://github.com/wp-cli",
-        "role": "Developer"
-    }],
+    "authors": [
+        {
+            "name": "WP-CLI Team",
+            "homepage": "http://github.com/wp-cli",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": ">=5.4",
         "wp-cli/package-command": "^2",
@@ -23,14 +25,6 @@
         "wp-cli/extension-command": "^2",
         "wp-cli/wp-cli-tests": "2"
     },
-	"autoload": {
-        "psr-4": {
-            "": "src/"
-        },
-        "files": [
-            "wp-super-cache-cli.php"
-        ]
-    },
     "config": {
         "platform": {
             "php": "5.4"
@@ -38,6 +32,20 @@
         "process-timeout": 7200,
         "sort-packages": true
     },
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        },
+        "files": [
+            "wp-super-cache-cli.php"
+        ]
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/wojsmol/wp-super-cache-cli"
+        }
+    ],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
