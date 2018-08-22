@@ -52,7 +52,7 @@ class WP_Super_Cache_Loader {
 	 * @return void
 	 */
 	function maybe_load_files() {
-		if ( ! defined( 'WPCACHEHOME' ) ) {
+		if ( ! defined( 'WPCACHEHOME' ) || ! function_exists( 'wpsc_init' ) ) {
 			return;
 		}
 
@@ -62,6 +62,14 @@ class WP_Super_Cache_Loader {
 
 		if ( ! function_exists( 'wp_cache_postload' ) ) {
 			require_once WPCACHEHOME . '/wp-cache-phase1.php';
+		}
+
+		if ( ! function_exists( 'domain_mapping_actions' ) ) {
+			require_once WPCACHEHOME . '/plugins/domain-mapping.php';
+		}
+
+		if ( ! function_exists( 'wp_super_cache_multisite_init' ) ) {
+			require_once WPCACHEHOME . '/plugins/multisite.php';
 		}
 
 		$this->maybe_load_config();
