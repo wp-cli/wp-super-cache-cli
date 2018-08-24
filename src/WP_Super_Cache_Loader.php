@@ -3,9 +3,35 @@
 /**
  * Load WPSC files and config file if they aren't loaded.
  */
-class WP_Super_Cache_Loader {
+final class WP_Super_Cache_Loader {
 
-	public function __construct() {
+	/**
+	 * @var string version of WP Super Cache
+	 */
+	protected $wpsc_version;
+
+	/**
+	 * Loads WordPress.
+	 *
+	 * @return void
+	 */
+	public function load() {
+		// It's possible that wp is already loaded.
+		if ( function_exists( 'add_filter' ) ) {
+			$this->maybe_load_files();
+			return;
+		}
+
+		$this->register_hooks();
+		WP_CLI::get_runner()->load_wordpress();
+	}
+
+	/**
+	 * Registers the hooks.
+	 *
+	 * @return void
+	 */
+	private function register_hooks() {
 		WP_CLI::add_wp_hook( 'muplugins_loaded', array( $this, 'init_cache_base' ) );
 		WP_CLI::add_wp_hook( 'plugins_loaded', array( $this, 'maybe_load_files' ) );
 	}
@@ -21,7 +47,7 @@ class WP_Super_Cache_Loader {
 	 *
 	 * @return void
 	 */
-	function init_cache_base() {
+	public function init_cache_base() {
 		global $WPSC_HTTP_HOST, $cache_path, $current_blog, $blogcacheid, $blog_cache_dir;
 
 		if ( ! defined( 'WPCACHEHOME' ) ) {
@@ -51,12 +77,15 @@ class WP_Super_Cache_Loader {
 	 *
 	 * @return void
 	 */
-	function maybe_load_files() {
+	public function maybe_load_files() {
+		// WPSC >= 1.5.2 and it's active
 		if ( ! defined( 'WPCACHEHOME' ) || ! function_exists( 'wpsc_init' ) ) {
 			return;
 		}
 
-		if ( ! function_exists( 'wp_cache_phase2' ) ) {
+		if ( version_compare( $this->get_wpsc_version(), '1.5.9', '>=' ) &&
+			! function_exists( 'wp_cache_phase2' )
+		) {
 			require_once WPCACHEHOME . '/wp-cache-phase2.php';
 		}
 
@@ -82,7 +111,7 @@ class WP_Super_Cache_Loader {
 	 *
 	 * @return void
 	 */
-	function maybe_load_config() {
+	private function maybe_load_config() {
 		global $super_cache_enabled, $cache_enabled, $wp_cache_mod_rewrite, $wp_cache_home_path, $cache_path, $file_prefix;
 		global $wp_cache_mutex_disabled, $mutex_filename, $sem_id, $wp_super_cache_late_init;
 		global $cache_compression, $cache_max_time, $wp_cache_shutdown_gc, $cache_rebuild_files;
@@ -98,13 +127,43 @@ class WP_Super_Cache_Loader {
 			return;
 		}
 
+		$is_config_readable = is_file( $wp_cache_config_file ) && is_readable( $wp_cache_config_file );
+
 		if ( ! isset( $cache_enabled, $super_cache_enabled, $wp_cache_mod_rewrite, $wp_cache_debug_log )
-			&& ! @include( $wp_cache_config_file ) // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+			&& ( ! $is_config_readable || ! include( $wp_cache_config_file ) )
 		) {
-			if ( defined( 'WPCACHEHOME' ) && ! emtpy( $wp_cache_config_file_sample ) ) {
-				@include( $wp_cache_config_file_sample ); // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
-				WP_CLI::line( 'sample config loaded' );
+			if ( defined( 'WPCACHEHOME' )
+				&& ! empty( $wp_cache_config_file_sample )
+				&& include( $wp_cache_config_file_sample )
+			) {
+				WP_CLI::warning( 'Default cache config file loaded - ' . $wp_cache_config_file_sample );
+			} else {
+				WP_CLI::error( 'Cannot load cache config file.' );
 			}
 		}
+	}
+
+	/**
+	 * Gets version of WP Super Cache.
+	 *
+	 * @return string
+	 */
+	public function get_wpsc_version() {
+		if ( isset( $this->wpsc_version ) ) {
+			return $this->wpsc_version;
+		}
+
+		if ( ! defined( 'ABSPATH' ) || ! defined( 'WP_PLUGIN_DIR' ) || ! function_exists( 'get_file_data' ) ) {
+			return null;
+		}
+
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
+		$plugin_details     = get_plugin_data( WP_PLUGIN_DIR . '/wp-super-cache/wp-cache.php' );
+		$this->wpsc_version = isset( $plugin_details['Version'] ) ? $plugin_details['Version'] : null;
+
+		return $this->wpsc_version;
 	}
 }
