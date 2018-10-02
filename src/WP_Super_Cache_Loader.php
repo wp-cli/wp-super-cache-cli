@@ -34,10 +34,12 @@ final class WP_Super_Cache_Loader {
 		$error_msg = '';
 
 		// Before loading files check is plugin installed/activated.
-		if ( ! $this->is_wpsc_plugin_active() ) {
-			$error_msg = 'WP Super Cache needs to be enabled to use its WP-CLI commands.';
+		if ( $this->get_wpsc_version() === '' ) {
+			$error_msg = 'WP Super Cache needs to be installed to use its WP-CLI commands.';
 		} elseif ( version_compare( $this->get_wpsc_version(), '1.5.2', '<' ) ) {
 			$error_msg = 'Minimum required version of WP Super Cache is 1.5.2';
+		} elseif ( ! $this->is_wpsc_plugin_active() ) {
+			$error_msg = 'WP Super Cache needs to be activated to use its WP-CLI commands.';
 		} elseif ( ! defined( 'WP_CACHE' ) || ! WP_CACHE ) {
 			$error_msg = 'WP_CACHE constant is false or not defined';
 		} elseif ( defined( 'WP_CACHE' ) && WP_CACHE && defined( 'ADVANCEDCACHEPROBLEM' ) ) {
