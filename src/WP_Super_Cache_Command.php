@@ -6,27 +6,28 @@
 class WP_Super_Cache_Command extends WP_CLI_Command {
 
 	/**
-	 * @var string version of WP Super Cache
+	 * Version of WP Super Cache plugin.
+	 *
+	 * @var string Version.
 	 */
 	protected $wpsc_version;
 
 	/**
-	 * Loads WordPress.
+	 * Loads WP Super Cache config file and dependencies.
 	 *
 	 * @return void
 	 */
 	private function load() {
-		$loader = new WP_Super_Cache_Loader();
+		global $cache_enabled, $super_cache_enabled, $cache_path, $wp_cache_mod_rewrite, $wp_cache_debug_log;
 
-		$loader->load();
-		$this->wpsc_version = $loader->get_wpsc_version();
+		$cli_loader = new WP_Super_Cache_Loader();
 
-		if ( ! function_exists( 'wp_super_cache_enable' ) || empty( $this->wpsc_version ) ) {
-			WP_CLI::error( 'WP Super Cache needs to be enabled to use its WP-CLI commands.' );
-		}
+		$cli_loader->load();
+		$this->wpsc_version = $cli_loader->get_wpsc_version();
 
-		if ( version_compare( $this->wpsc_version, '1.5.2', '<' ) ) {
-			WP_CLI::error( 'Minimum required version of WP Super Cache is 1.5.2' );
+		// Check if basic global variables are populated.
+		if ( ! isset( $cache_enabled, $super_cache_enabled, $cache_path, $wp_cache_mod_rewrite, $wp_cache_debug_log ) ) {
+			WP_CLI::error( 'WP Super Cache plugin is not properly loaded' );
 		}
 	}
 
@@ -35,7 +36,7 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 	 *
 	 * @synopsis [--post_id=<post-id>] [--permalink=<permalink>]
 	 *
-	 * @when before_wp_load
+	 * @when after_wp_load
 	 */
 	public function flush( $args = array(), $assoc_args = array() ) {
 		global $file_prefix;
@@ -67,7 +68,7 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 	/**
 	 * Get the status of the cache.
 	 *
-	 * @when before_wp_load
+	 * @when after_wp_load
 	 */
 	public function status( $args = array(), $assoc_args = array() ) {
 		global $super_cache_enabled;
@@ -98,7 +99,7 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 	/**
 	 * Enable the WP Super Cache.
 	 *
-	 * @when before_wp_load
+	 * @when after_wp_load
 	 */
 	public function enable( $args = array(), $assoc_args = array() ) {
 		global $super_cache_enabled;
@@ -116,7 +117,7 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 	/**
 	 * Disable the WP Super Cache.
 	 *
-	 * @when before_wp_load
+	 * @when after_wp_load
 	 */
 	public function disable( $args = array(), $assoc_args = array() ) {
 		global $super_cache_enabled;
@@ -136,7 +137,7 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 	 *
 	 * @synopsis [--status] [--cancel]
 	 *
-	 * @when before_wp_load
+	 * @when after_wp_load
 	 */
 	public function preload( $args = array(), $assoc_args = array() ) {
 		global $super_cache_enabled;
