@@ -20,7 +20,7 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 	private function load() {
 		global $cache_enabled, $super_cache_enabled, $cache_path, $wp_cache_mod_rewrite, $wp_cache_debug_log;
 
-		$cli_loader = new WP_Super_Cache_Loader();
+		$cli_loader = new WP_Super_Cache_CLI_Loader();
 
 		$cli_loader->load();
 		$this->wpsc_version = $cli_loader->get_wpsc_version();

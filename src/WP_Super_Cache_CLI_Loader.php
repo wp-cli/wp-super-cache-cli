@@ -3,7 +3,7 @@
 /**
  * Load WPSC files and config file if they aren't loaded.
  */
-final class WP_Super_Cache_Loader {
+final class WP_Super_Cache_CLI_Loader {
 
 	/**
 	 * Version of WP Super Cache plugin.
