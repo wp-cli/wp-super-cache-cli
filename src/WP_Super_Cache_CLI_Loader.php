@@ -86,7 +86,7 @@ final class WP_Super_Cache_CLI_Loader {
 
 		// If the parameter --url doesn't exist then gets HTTP_HOST from WordPress Address.
 		if ( empty( $_SERVER['HTTP_HOST'] ) ) {
-			$_SERVER['HTTP_HOST'] = (string) parse_url( get_option( 'home' ), PHP_URL_HOST );
+			$_SERVER['HTTP_HOST'] = $this->parse_home_url( PHP_URL_HOST );
 		}
 
 		if ( empty( $WPSC_HTTP_HOST ) ) {
@@ -114,15 +114,13 @@ final class WP_Super_Cache_CLI_Loader {
 				|| empty( $wp_cache_config_file_sample )
 				|| ! $this->maybe_include_file( 'include', $wp_cache_config_file_sample )
 			) {
-				WP_CLI::error( 'Can not load cache config file.' );
+				WP_CLI::error( 'Cannot load cache config file.' );
 			}
 
 			WP_CLI::warning( 'Default cache config file loaded - ' . str_replace( ABSPATH, '', $wp_cache_config_file_sample ) );
 		}
 
-		$wp_cache_home_path = function_exists( 'wp_parse_url' ) ?
-			trailingslashit( (string) wp_parse_url( get_option( 'home' ), PHP_URL_PATH ) ) :
-			trailingslashit( (string) parse_url( get_option( 'home' ), PHP_URL_PATH ) );
+		$wp_cache_home_path = trailingslashit( $this->parse_home_url( PHP_URL_PATH ) );
 	}
 
 	/**
@@ -272,7 +270,7 @@ final class WP_Super_Cache_CLI_Loader {
 		}
 
 		if ( $loaded && ! empty( $run ) && function_exists( $run ) ) {
-			call_user_func_array( $run, array() );
+			call_user_func( $run );
 		}
 
 		return $loaded;
@@ -280,6 +278,8 @@ final class WP_Super_Cache_CLI_Loader {
 
 	/**
 	 * Gets version of WP Super Cache.
+	 *
+	 * @global string $wp_cache_config_file_sample Absolute path to wp-cache config sample file.
 	 *
 	 * @return string
 	 */
@@ -298,15 +298,18 @@ final class WP_Super_Cache_CLI_Loader {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		$this->wpsc_plugin_file = trailingslashit( WP_PLUGIN_DIR ) . 'wp-super-cache/wp-cache.php';
-		if ( ! empty( $wp_cache_config_file_sample ) ) {
-			$this->wpsc_plugin_file = plugin_dir_path( $wp_cache_config_file_sample ) . 'wp-cache.php';
+		$this->wpsc_version     = '';
+		$this->wpsc_plugin_file = empty( $wp_cache_config_file_sample )
+			? trailingslashit( WP_PLUGIN_DIR ) . 'wp-super-cache/wp-cache.php'
+			: plugin_dir_path( $wp_cache_config_file_sample ) . 'wp-cache.php';
+
+		if ( ! is_file( $this->wpsc_plugin_file ) || ! is_readable( $this->wpsc_plugin_file ) ) {
+			return $this->wpsc_version;
 		}
 
-		$this->wpsc_version = '';
-		if ( is_file( $this->wpsc_plugin_file ) && is_readable( $this->wpsc_plugin_file ) ) {
-			$plugin_details     = get_plugin_data( $this->wpsc_plugin_file );
-			$this->wpsc_version = ! empty( $plugin_details['Version'] ) ? $plugin_details['Version'] : '';
+		$plugin_details = get_plugin_data( $this->wpsc_plugin_file );
+		if ( ! empty( $plugin_details['Version'] ) ) {
+			$this->wpsc_version = $plugin_details['Version'];
 		}
 
 		return $this->wpsc_version;
@@ -323,5 +326,18 @@ final class WP_Super_Cache_CLI_Loader {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Retrieves the component (PHP_URL_HOST or PHP_URL_PATH) from home URL.
+	 *
+	 * @param int $component The component to retrieve.
+	 *
+	 * @return string
+	 */
+	private function parse_home_url( $component ) {
+		return function_exists( 'wp_parse_url' )
+			? (string) wp_parse_url( get_option( 'home' ), $component )
+			: (string) parse_url( get_option( 'home' ), $component );
 	}
 }
