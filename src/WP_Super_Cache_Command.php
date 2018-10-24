@@ -6,15 +6,42 @@
 class WP_Super_Cache_Command extends WP_CLI_Command {
 
 	/**
+	 * Version of WP Super Cache plugin.
+	 *
+	 * @var string Version.
+	 */
+	protected $wpsc_version;
+
+	/**
+	 * Loads WP Super Cache config file and dependencies.
+	 *
+	 * @return void
+	 */
+	private function load() {
+		global $cache_enabled, $super_cache_enabled, $cache_path, $wp_cache_mod_rewrite, $wp_cache_debug_log;
+
+		$cli_loader = new WP_Super_Cache_CLI_Loader();
+
+		$cli_loader->load();
+		$this->wpsc_version = $cli_loader->get_wpsc_version();
+
+		// Check if basic global variables are populated.
+		if ( ! isset( $cache_enabled, $super_cache_enabled, $cache_path, $wp_cache_mod_rewrite, $wp_cache_debug_log ) ) {
+			WP_CLI::error( 'WP Super Cache plugin is not properly loaded' );
+		}
+	}
+
+	/**
 	 * Clear something from the cache.
 	 *
 	 * @synopsis [--post_id=<post-id>] [--permalink=<permalink>]
+	 *
+	 * @when after_wp_load
 	 */
-	function flush( $args = array(), $assoc_args = array() ) {
-		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
-		global $WPSC_HTTP_HOST;
-		$home_url       = parse_url( home_url() );
-		$WPSC_HTTP_HOST = $home_url['host'];
+	public function flush( $args = array(), $assoc_args = array() ) {
+		global $file_prefix;
+
+		$this->load();
 
 		if ( isset( $assoc_args['post_id'] ) ) {
 			if ( is_numeric( $assoc_args['post_id'] ) ) {
@@ -40,10 +67,13 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 
 	/**
 	 * Get the status of the cache.
+	 *
+	 * @when after_wp_load
 	 */
-	function status( $args = array(), $assoc_args = array() ) {
-		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
+	public function status( $args = array(), $assoc_args = array() ) {
+		global $super_cache_enabled;
 
+		$this->load();
 		$cache_stats = get_option( 'supercache_stats' );
 
 		if ( ! empty( $cache_stats ) ) {
@@ -68,10 +98,13 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 
 	/**
 	 * Enable the WP Super Cache.
+	 *
+	 * @when after_wp_load
 	 */
-	function enable( $args = array(), $assoc_args = array() ) {
-		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
+	public function enable( $args = array(), $assoc_args = array() ) {
+		global $super_cache_enabled;
 
+		$this->load();
 		wp_super_cache_enable();
 
 		if ( $super_cache_enabled ) {
@@ -83,10 +116,13 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 
 	/**
 	 * Disable the WP Super Cache.
+	 *
+	 * @when after_wp_load
 	 */
-	function disable( $args = array(), $assoc_args = array() ) {
-		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
+	public function disable( $args = array(), $assoc_args = array() ) {
+		global $super_cache_enabled;
 
+		$this->load();
 		wp_super_cache_disable();
 
 		if ( ! $super_cache_enabled ) {
@@ -100,9 +136,13 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 	 * Primes the cache by creating static pages before users visit them
 	 *
 	 * @synopsis [--status] [--cancel]
+	 *
+	 * @when after_wp_load
 	 */
-	function preload( $args = array(), $assoc_args = array() ) {
-		require_once( WPCACHEHOME . '/wp-cache-phase1.php' );
+	public function preload( $args = array(), $assoc_args = array() ) {
+		global $super_cache_enabled;
+
+		$this->load();
 
 		$preload_counter = get_option( 'preload_cache_counter' );
 		$preloading      = is_array( $preload_counter ) && $preload_counter['c'] > 0;
