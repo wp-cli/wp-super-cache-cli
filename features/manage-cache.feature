@@ -3,6 +3,12 @@ Feature: Generate cache
   Scenario: Manage wp-super-cache via CLI
     Given a WP install
 
+    When I try `wp super-cache status`
+    Then STDERR should contain:
+      """
+      Error: WP Super Cache needs to be installed to use its WP-CLI commands.
+      """
+
     When I run `wp plugin install wp-super-cache`
     Then STDOUT should contain:
       """
@@ -13,7 +19,7 @@ Feature: Generate cache
     When I try `wp super-cache enable`
     Then STDERR should contain:
       """
-      Error: WP Super Cache needs to be enabled to use its WP-CLI commands.
+      Error: WP Super Cache needs to be activated to use its WP-CLI commands.
       """
 
     When I run `wp plugin activate wp-super-cache`
