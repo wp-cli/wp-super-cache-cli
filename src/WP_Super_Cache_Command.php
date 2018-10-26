@@ -148,7 +148,7 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 		wp_cache_disable();
 		wp_super_cache_disable();
 
-		if ( ! $super_cache_enabled ) {
+		if ( ! $cache_enabled ) {
 			WP_CLI::success( 'The WP Super Cache is disabled.' );
 		} else {
 			WP_CLI::error( 'The WP Super Cache is still enabled, check its settings page for more info.' );
