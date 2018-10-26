@@ -115,12 +115,20 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 	 * @when after_wp_load
 	 */
 	public function enable( $args = array(), $assoc_args = array() ) {
-		global $super_cache_enabled;
+		global $cache_enabled, $wp_cache_mod_rewrite;
 
 		$this->load();
-		wp_super_cache_enable();
 
-		if ( $super_cache_enabled ) {
+		wp_cache_enable();
+		if ( ! defined( 'DISABLE_SUPERCACHE' ) ) {
+			wp_super_cache_enable();
+		}
+
+		if ( $wp_cache_mod_rewrite ) {
+			add_mod_rewrite_rules();
+		}
+
+		if ( $cache_enabled ) {
 			WP_CLI::success( 'The WP Super Cache is enabled.' );
 		} else {
 			WP_CLI::error( 'The WP Super Cache is not enabled, check its settings page for more info.' );
@@ -133,9 +141,11 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 	 * @when after_wp_load
 	 */
 	public function disable( $args = array(), $assoc_args = array() ) {
-		global $super_cache_enabled;
+		global $cache_enabled;
 
 		$this->load();
+
+		wp_cache_disable();
 		wp_super_cache_disable();
 
 		if ( ! $super_cache_enabled ) {
