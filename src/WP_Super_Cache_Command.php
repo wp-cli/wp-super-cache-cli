@@ -71,14 +71,27 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 	 * @when after_wp_load
 	 */
 	public function status( $args = array(), $assoc_args = array() ) {
-		global $super_cache_enabled;
+		global $cache_enabled, $super_cache_enabled, $wp_cache_mod_rewrite;
 
 		$this->load();
-		$cache_stats = get_option( 'supercache_stats' );
 
+		WP_CLI::line( 'Version of WP Super Cache: ' . $this->wpsc_version );
+		WP_CLI::line();
+
+		$cache_method = 'WP-Cache';
+		if ( $cache_enabled && $super_cache_enabled ) {
+			$cache_method = $wp_cache_mod_rewrite ? 'Expert' : 'Simple';
+		}
+
+		$cache_status  = 'Cache status: ' . WP_CLI::colorize( $cache_enabled ? '%gOn%n' : '%rOff%n' ) . PHP_EOL;
+		$cache_status .= $cache_enabled
+			? 'Cache Delivery Method: ' . $cache_method . PHP_EOL
+			: '';
+		WP_CLI::line( $cache_status );
+
+		$cache_stats = get_option( 'supercache_stats' );
 		if ( ! empty( $cache_stats ) ) {
 			if ( $cache_stats['generated'] > time() - 3600 * 24 ) {
-				WP_CLI::line( 'Cache status: ' . ( $super_cache_enabled ? '%gOn%n' : '%rOff%n' ) );
 				WP_CLI::line( 'Cache content on ' . date( 'r', $cache_stats['generated'] ) . ': ' );
 				WP_CLI::line();
 				WP_CLI::line( '    WordPress cache:' );
