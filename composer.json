@@ -17,21 +17,20 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
+        "php": ">=7.2",
         "wp-cli/wp-cli": "^2"
     },
     "require-dev": {
         "wp-cli/extension-command": "^2",
-        "wp-cli/wp-cli-tests": "^2.0.7"
+        "wp-cli/wp-cli-tests": "^5"
     },
     "config": {
-        "platform": {
-            "php": "5.4"
-        },
+        "lock": false,
         "process-timeout": 7200,
         "sort-packages": true,
         "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
         }
     },
     "autoload": {
@@ -46,13 +45,17 @@
     "prefer-stable": true,
     "scripts": {
         "behat": "run-behat-tests",
+        "behat-rerun": "rerun-behat-tests",
         "lint": "run-linter-tests",
         "phpcs": "run-phpcs-tests",
+        "phpstan": "run-phpstan-tests",
+        "phpcbf": "run-phpcbf-cleanup",
         "phpunit": "run-php-unit-tests",
         "prepare-tests": "install-package-tests",
         "test": [
             "@lint",
             "@phpcs",
+            "@phpstan",
             "@phpunit",
             "@behat"
         ]

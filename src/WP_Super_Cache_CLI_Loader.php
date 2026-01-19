@@ -75,6 +75,7 @@ final class WP_Super_Cache_CLI_Loader {
 	 * @return void
 	 */
 	public function init_cache_base() {
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 		global $WPSC_HTTP_HOST;
 
 		if ( ! defined( 'WPCACHEHOME' ) ) {
@@ -89,6 +90,7 @@ final class WP_Super_Cache_CLI_Loader {
 			$_SERVER['HTTP_HOST'] = $this->parse_home_url( PHP_URL_HOST );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 		if ( empty( $WPSC_HTTP_HOST ) ) {
 			$this->maybe_include_file( 'include', 'wp-cache-base.php' );
 		}
@@ -120,6 +122,7 @@ final class WP_Super_Cache_CLI_Loader {
 			WP_CLI::warning( 'Default cache config file loaded - ' . str_replace( ABSPATH, '', $wp_cache_config_file_sample ) );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		$wp_cache_home_path = trailingslashit( $this->parse_home_url( PHP_URL_PATH ) );
 	}
 
@@ -186,6 +189,7 @@ final class WP_Super_Cache_CLI_Loader {
 		if ( ! is_multisite() ) {
 			// Prevents PHP notices for single site installation.
 			if ( ! isset( $blog_cache_dir ) ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 				$blog_cache_dir = $cache_path;
 			}
 
@@ -193,7 +197,9 @@ final class WP_Super_Cache_CLI_Loader {
 		}
 
 		if ( is_object( $current_site ) ) {
-			$blogcacheid    = trim( is_subdomain_install() ? $current_site->domain : $current_site->path, '/' );
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+			$blogcacheid = trim( is_subdomain_install() ? $current_site->domain : $current_site->path, '/' );
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$blog_cache_dir = $cache_path . 'blogs/' . $blogcacheid . '/';
 		}
 	}
@@ -241,6 +247,7 @@ final class WP_Super_Cache_CLI_Loader {
 		global $wp_cache_mobile, $wp_cache_mobile_enabled, $wp_cache_mobile_browsers, $wp_cache_mobile_prefixes;
 		// Globals from other files.
 		global $wp_cache_config_file, $wp_cache_config_file_sample, $cache_domain_mapping;
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 		global $WPSC_HTTP_HOST, $blogcacheid, $blog_cache_dir;
 
 		$file = $this->get_wpsc_filename( $filename );
@@ -338,6 +345,7 @@ final class WP_Super_Cache_CLI_Loader {
 	private function parse_home_url( $component ) {
 		return function_exists( 'wp_parse_url' )
 			? (string) wp_parse_url( get_option( 'home' ), $component )
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
 			: (string) parse_url( get_option( 'home' ), $component );
 	}
 }

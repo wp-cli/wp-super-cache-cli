@@ -92,6 +92,7 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 		$cache_stats = get_option( 'supercache_stats' );
 		if ( ! empty( $cache_stats ) ) {
 			if ( $cache_stats['generated'] > time() - 3600 * 24 ) {
+				// phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 				WP_CLI::line( 'Cache content on ' . date( 'r', $cache_stats['generated'] ) . ': ' );
 				WP_CLI::line();
 				WP_CLI::line( '    WordPress cache:' );
@@ -176,7 +177,10 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 			WP_CLI::error( 'The WP Super Cache is not enabled.' );
 		}
 
-		if ( defined( 'DISABLESUPERCACHEPRELOADING' ) && true == DISABLESUPERCACHEPRELOADING ) {
+		if (
+				defined( 'DISABLESUPERCACHEPRELOADING' ) &&
+				( true === DISABLESUPERCACHEPRELOADING || 'true' === DISABLESUPERCACHEPRELOADING )
+			) {
 			WP_CLI::error( 'Cache preloading is not enabled.' );
 		}
 
