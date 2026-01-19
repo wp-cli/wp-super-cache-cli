@@ -1,9 +1,9 @@
 <?php
 
-$autoload = dirname( __FILE__ ) . '/vendor/autoload.php';
+$wpsc_autoload = __DIR__ . '/vendor/autoload.php';
 
-if ( file_exists( $autoload ) ) {
-	require_once $autoload;
+if ( file_exists( $wpsc_autoload ) ) {
+	require_once $wpsc_autoload;
 }
 
 if ( ! class_exists( 'WP_CLI' ) ) {
