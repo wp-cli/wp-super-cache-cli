@@ -64,16 +64,17 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 		$this->load();
 
 		if ( isset( $assoc_args['post_id'] ) ) {
-			if ( ! is_numeric( $assoc_args['post_id'] ) ) {
+			$post_id = absint( $assoc_args['post_id'] );
+			if ( $post_id <= 0 ) {
 				WP_CLI::error( 'This is not a valid post id.' );
 			}
 
-			wp_cache_post_change( $assoc_args['post_id'] );
+			wp_cache_post_change( $post_id );
 			WP_CLI::success( 'Post cache cleared.' );
 		} elseif ( isset( $assoc_args['permalink'] ) ) {
-			$id = url_to_postid( $assoc_args['permalink'] );
+			$id = absint( url_to_postid( $assoc_args['permalink'] ) );
 
-			if ( ! is_numeric( $id ) ) {
+			if ( $id <= 0 ) {
 				WP_CLI::error( 'There is no post with this permalink.' );
 			}
 

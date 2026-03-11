@@ -49,3 +49,18 @@ Feature: Generate cache
       """
       Error: This is not a valid post id.
       """
+
+    When I run `wp post get {POST_ID} --field=link`
+    Then save STDOUT as {POST_PERMALINK}
+
+    When I run `wp super-cache flush --permalink={POST_PERMALINK}`
+    Then STDOUT should contain:
+      """
+      Success: Post cache cleared.
+      """
+
+    When I try `wp super-cache flush --permalink=https://example.com/no-such-post/`
+    Then STDERR should contain:
+      """
+      Error: There is no post with this permalink.
+      """
