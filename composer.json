@@ -21,6 +21,7 @@
         "wp-cli/wp-cli": "^2"
     },
     "require-dev": {
+        "wp-cli/entity-command": "^2.8",
         "wp-cli/extension-command": "^2",
         "wp-cli/wp-cli-tests": "^5"
     },
