@@ -50,7 +50,7 @@ Feature: Generate cache
       Error: This is not a valid post id.
       """
 
-    When I run `wp post get {POST_ID} --field=link`
+    When I run `wp post get {POST_ID} --field=url`
     Then save STDOUT as {POST_PERMALINK}
 
     When I run `wp super-cache flush --permalink={POST_PERMALINK}`
