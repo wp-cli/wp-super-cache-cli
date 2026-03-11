@@ -32,9 +32,29 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Clear something from the cache.
+	 * Clears the cache, or a specific post's cache.
 	 *
-	 * @synopsis [--post_id=<post-id>] [--permalink=<permalink>]
+	 * ## OPTIONS
+	 *
+	 * [--post_id=<post-id>]
+	 * : Clear the cache for the post with this ID.
+	 *
+	 * [--permalink=<permalink>]
+	 * : Clear the cache for the post with this permalink.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     # Clear all cached pages.
+	 *     $ wp super-cache flush
+	 *     Success: Cache cleared.
+	 *
+	 *     # Clear the cache for a specific post by ID.
+	 *     $ wp super-cache flush --post_id=42
+	 *     Success: Post cache cleared.
+	 *
+	 *     # Clear the cache for a specific post by permalink.
+	 *     $ wp super-cache flush --permalink=https://example.com/my-post/
+	 *     Success: Post cache cleared.
 	 *
 	 * @when after_wp_load
 	 */
@@ -44,21 +64,22 @@ class WP_Super_Cache_Command extends WP_CLI_Command {
 		$this->load();
 
 		if ( isset( $assoc_args['post_id'] ) ) {
-			if ( is_numeric( $assoc_args['post_id'] ) ) {
-				wp_cache_post_change( $assoc_args['post_id'] );
-			} else {
+			$post_id = absint( $assoc_args['post_id'] );
+			if ( $post_id <= 0 ) {
 				WP_CLI::error( 'This is not a valid post id.' );
 			}
 
-			wp_cache_post_change( $assoc_args['post_id'] );
+			wp_cache_post_change( $post_id );
+			WP_CLI::success( 'Post cache cleared.' );
 		} elseif ( isset( $assoc_args['permalink'] ) ) {
-			$id = url_to_postid( $assoc_args['permalink'] );
+			$id = absint( url_to_postid( $assoc_args['permalink'] ) );
 
-			if ( is_numeric( $id ) ) {
-				wp_cache_post_change( $id );
-			} else {
+			if ( $id <= 0 ) {
 				WP_CLI::error( 'There is no post with this permalink.' );
 			}
+
+			wp_cache_post_change( $id );
+			WP_CLI::success( 'Post cache cleared.' );
 		} else {
 			wp_cache_clean_cache( $file_prefix, true );
 			WP_CLI::success( 'Cache cleared.' );

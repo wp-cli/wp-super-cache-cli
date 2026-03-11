@@ -28,3 +28,39 @@ Feature: Generate cache
       """
       Success: The WP Super Cache is enabled.
       """
+
+    When I run `wp super-cache flush`
+    Then STDOUT should contain:
+      """
+      Success: Cache cleared.
+      """
+
+    When I run `wp post create --post_title='Test post' --post_status=publish --porcelain`
+    Then save STDOUT as {POST_ID}
+
+    When I run `wp super-cache flush --post_id={POST_ID}`
+    Then STDOUT should contain:
+      """
+      Success: Post cache cleared.
+      """
+
+    When I try `wp super-cache flush --post_id=invalid`
+    Then STDERR should contain:
+      """
+      Error: This is not a valid post id.
+      """
+
+    When I run `wp post get {POST_ID} --field=url`
+    Then save STDOUT as {POST_PERMALINK}
+
+    When I run `wp super-cache flush --permalink={POST_PERMALINK}`
+    Then STDOUT should contain:
+      """
+      Success: Post cache cleared.
+      """
+
+    When I try `wp super-cache flush --permalink=https://example.com/no-such-post/`
+    Then STDERR should contain:
+      """
+      Error: There is no post with this permalink.
+      """
