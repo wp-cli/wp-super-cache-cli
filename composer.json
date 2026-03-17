@@ -60,5 +60,10 @@
             "@phpunit",
             "@behat"
         ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "2.1.x-dev"
+        }
     }
 }
