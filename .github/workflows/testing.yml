@@ -13,4 +13,5 @@ jobs:
   test:
     uses: wp-cli/.github/.github/workflows/reusable-testing.yml@main
     with:
-      minimum-wp: 6.7
+      minimum-wp: 6.8
+      minimum-php: 7.4
